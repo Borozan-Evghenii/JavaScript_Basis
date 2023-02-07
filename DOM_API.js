@@ -114,3 +114,120 @@ el.addEventListener("click", () => {
   console.log("event!!");
 });
 //Un eventListener declarat astfel nu poate fi șters
+
+/*=========================================
+Obiectul evenimentului și lucrul cu acesta 
+fiecare funcție folosită la procesarea
+ evenimentelor ca paramentr primește 
+ obiectul event care conține informație despre eveniment
+=========================================*/
+const input = document.querySelector("input");
+
+input.addEventListener("keypress", handleClick);
+
+function handleClick(event) {
+  if (event.key === "Enter") {
+    //controlăm ce tastă a fost apăsată
+    event.target.nextElementSibling.focus();
+    //luăm elementul întors de eveniment și punem focus pe următorul element
+  }
+}
+
+/*=========================================
+Stoparea comportamentului default 
+event.stopPropagation()
+împiedică propagarea evenimnetului pe părinții elementului pentru care este setat evenimentul ( currentTarget : returnează elementul concret care a dat start evenimentului )
+event.preventDefault()
+împiedică comportamentul obișnuit form( pagina nu se reîncărca ), linkul a( linkul nu va funcționa )
+=========================================*/
+
+/*=========================================
+Crearea și Ștergerea dinamică a elementelor
+=========================================*/
+
+const list = document.querySelector(".list");
+
+function handleClickElement(event) {
+  //this se referă la elementul pe care sa dat click
+  const newToDo = this.previousElementSibling.value.trim();
+  newToDo ? createNewElement(newToDo) : alert("write some text");
+}
+
+function createNewElement(text) {
+  const li = document.createElement("li"); //Creăm un element li
+  li.innerText = text; //setăm value
+  li.classList = "todo-item"; // adăugăm class
+  li.addEventListener("click", removeTodo); //adăugăm ascultător de evenimente pentru elementul nou creat
+  list.append(li); //introducem elementul creat în elementul list
+  list.prepend(li); //introducem elementul creat în elementul list
+}
+
+function removeTodo() {
+  //this se referă la elementul pe care sa dat click
+  this.removeEventListener("click", removeTodo);
+  //Ștergem ascultătorul de evenimente
+  this.remove();
+  //ștergem elementul
+}
+
+/*=========================================
+Proprietățile și metodele 
+=========================================*/
+
+const block1 = document.querySelector("#block");
+//căutarea identificatorului se efectuează în tot documentul
+const block2 = block1.querySelector("#too");
+//căutarea identificatorului se efectuează doar în limitele block1
+
+block2.getBoundingClientRect();
+//returnează parametrii geometrici ale elementului ( width, height , poziționarea absolută top, bottom, letft, right )
+
+block2.insertAdjacentHTML(
+  "afterbegin",
+  //primul parametru primește poziția unde urmează a fi inclus HTML
+  //afterend: după sfîrșitul elementului
+  //afterbegin: la începutul elementului
+  `
+  <h2 class="class">Heading</h2>
+  <p>Proposition</p>
+`
+);
+//permite crearea mai multor elemente deodată (createElement)
+
+block2.closest("a");
+//returnează cel mai apropiat părinte cu tagul a
+block2.closest("#block");
+//returnează cel mai apropiat părinte cu id-ul dat
+
+/*=====================================
+Lucru cu momeria Browserului
+LocalStorage: timpul de stocare este nelimitat ( poate fi șters manual )
+SessionStorage: timpul de stocare a datelor este limitat de sesiunea utilizatorului ( când se închide browserul sessionStorage se șterge )
+Ambele metode primesc infromația de tip string
+======================================*/
+//Toate ănstrucșiunile de mai jos sunt valabile și pentru sessionStorage
+localStorage.setItem("todos", "make react app");
+//setItem adaugă informația în local storage primind parametrii (key, keyValue)
+
+localStorage.getItem("todos");
+//getItem returnează elementul după keyea acestuaia în caz că cheia nu există întoarce null
+
+localStorage.clear();
+//șterge toată înformația din localStorage
+
+function saveToStorge(todo) {
+  const todos = JSON.parse(localStorage.getItem("tasks") || []);
+  //JSON.parse() transformă string în obiect pentru ca ulterior să putem interacționa
+  localStorage.setItem(JSON.stringify([...todos, todo]));
+  //JSON.stringify() transformă orice în str
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  //acest ascultător de evenimente se va executa după ce toată informația de pe pagină va fi vizibilă
+  const todos = JSON.parse(localStorage.getItem("tasks") || []);
+  if (todos) {
+    todos.forEach((e) => {
+      e.createNewElement(todo);
+    });
+  }
+});
